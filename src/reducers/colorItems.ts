@@ -1,11 +1,9 @@
+import { ActionType } from ".";
 import { ColorItem } from "../components/ColorTable";
 
 const INITIAL_STATE: ColorItem[] = [];
 
-export enum ActionType {
-    UPDATE_COLOR_ITEM = "UPDATE_COLOR_ITEM",
-    ADD_COLOR_ITEM = "ADD_COLOR_ITEM"
-}
+
 
 type ColorItemAction = {
     type: ActionType,

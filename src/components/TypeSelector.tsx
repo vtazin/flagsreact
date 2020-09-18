@@ -1,15 +1,17 @@
 import React, { Component, ChangeEvent } from "react";
+import { connect, ConnectedProps } from "react-redux";
+import { RootState } from "../reducers";
+import { FlagColorType } from "../reducers/colorType";
+import { updateColorType } from "../actions";
 
-enum FlagColorType {
-  DUPLICATE = "duplicate",
-  STRICT = "strict",
-}
-
-export default class TypeSelector extends Component {
-  state = {
-    colorType: FlagColorType.DUPLICATE,
+const mapStateToProps = (state: RootState) => {
+  return {
+    colorType: state.colorType,
   };
+};
+const connector = connect(mapStateToProps, { updateColorType });
 
+class TypeSelector extends Component<ConnectedProps<typeof connector>> {
   render() {
     return (
       <div>
@@ -20,7 +22,7 @@ export default class TypeSelector extends Component {
           name="flagType"
           value={FlagColorType.DUPLICATE}
           onChange={this.onChange}
-          checked={this.state.colorType === FlagColorType.DUPLICATE}
+          checked={this.props.colorType === FlagColorType.DUPLICATE}
         />
         <label htmlFor="flagTypeDuplicate">Allow duplicate color</label>
         <input
@@ -29,7 +31,7 @@ export default class TypeSelector extends Component {
           name="flagType"
           value={FlagColorType.STRICT}
           onChange={this.onChange}
-          checked={this.state.colorType === FlagColorType.STRICT}
+          checked={this.props.colorType === FlagColorType.STRICT}
         />
         <label htmlFor="flagTypeStrict">Strict color</label>
       </div>
@@ -37,7 +39,8 @@ export default class TypeSelector extends Component {
   }
 
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ colorType: e.target.value as FlagColorType });
-    console.log(this.state.colorType);
+    this.props.updateColorType(e.target.value as FlagColorType);
   };
 }
+
+export default connector(TypeSelector);
