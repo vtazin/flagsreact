@@ -14,7 +14,7 @@ class FlagElement extends Component<FlagElementProps> {
             border: "solid",
           }}
         >
-          {this.props.colorList.map((colorVal) => {
+          {this.props.colorList.map((colorVal, i) => {
             return (
               <div
                 style={{
@@ -22,7 +22,7 @@ class FlagElement extends Component<FlagElementProps> {
                   width: "90px",
                   backgroundColor: colorVal,
                 }}
-                key={colorVal}
+                key={colorVal + i}
               />
             );
           })}

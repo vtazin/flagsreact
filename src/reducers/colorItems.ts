@@ -3,13 +3,10 @@ import { ColorItem } from "../components/ColorTable";
 
 const INITIAL_STATE: ColorItem[] = [];
 
-
-
 type ColorItemAction = {
     type: ActionType,
     payload: ColorItem
 }
-
 
 export default function (state = INITIAL_STATE, action: ColorItemAction) {
 

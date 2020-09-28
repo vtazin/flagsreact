@@ -55,14 +55,6 @@ class ColorTable extends Component<StateConnector> {
     return result;
   }
 
-  componentDidMount() {
-    console.log(this.getActiveColors());
-  }
-
-  componentDidUpdate() {
-    console.log(this.getActiveColors());
-  }
-
   render() {
     return (
       <div>
