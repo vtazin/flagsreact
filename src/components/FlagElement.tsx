@@ -10,7 +10,6 @@ class FlagElement extends Component<FlagElementProps> {
       <div>
         <div
           style={{
-            width: "90px",
             border: "solid",
           }}
         >
@@ -18,8 +17,8 @@ class FlagElement extends Component<FlagElementProps> {
             return (
               <div
                 style={{
-                  height: "30px",
-                  width: "90px",
+                  height: "6px",
+                  width: "24px",
                   backgroundColor: colorVal,
                 }}
                 key={colorVal + i}
