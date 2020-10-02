@@ -10,15 +10,15 @@ class FlagElement extends Component<FlagElementProps> {
       <div>
         <div
           style={{
-            border: "solid",
+            border: "solid 1px",
           }}
         >
           {this.props.colorList.map((colorVal, i) => {
             return (
               <div
                 style={{
-                  height: "6px",
-                  width: "24px",
+                  height: "4px",
+                  width: "16px",
                   backgroundColor: colorVal,
                 }}
                 key={colorVal + i}

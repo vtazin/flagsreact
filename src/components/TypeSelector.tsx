@@ -1,46 +1,55 @@
-import React, { Component, ChangeEvent } from "react";
+import React, { Component } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { RootState } from "../reducers";
-import { FlagColorType } from "../reducers/colorType";
-import { updateColorType } from "../actions";
+import { RootState } from "../store/reducers";
+import { updateFlagSettings } from "../store/reducers/actions";
 
 const mapStateToProps = (state: RootState) => {
   return {
-    colorType: state.colorType,
+    flagSettings: state.flagSettings,
   };
 };
-const connector = connect(mapStateToProps, { updateColorType });
+const connector = connect(mapStateToProps, { updateFlagSettings });
 
 class TypeSelector extends Component<ConnectedProps<typeof connector>> {
+  get withoutRepeat() {
+    return this.props.flagSettings.withoutRepeat;
+  }
+
+  set withoutRepeat(value: boolean) {
+    this.props.updateFlagSettings({ withoutRepeat: value });
+  }
+  get strictOrder() {
+    return this.props.flagSettings.strictOrder;
+  }
+
+  set strictOrder(value: boolean) {
+    this.props.updateFlagSettings({ strictOrder: value });
+  }
+
   render() {
     return (
       <div>
         <p>Choose template:</p>
         <input
-          type="radio"
-          id="flagTypeDuplicate"
+          type="checkbox"
+          id="withoutRepeat"
           name="flagType"
-          value={FlagColorType.DUPLICATE}
-          onChange={this.onChange}
-          checked={this.props.colorType === FlagColorType.DUPLICATE}
+          checked={!this.withoutRepeat}
+          onChange={() => (this.withoutRepeat = !this.withoutRepeat)}
         />
-        <label htmlFor="flagTypeDuplicate">Allow duplicate color</label>
+        <label htmlFor="withoutRepeat">Allow duplicate colors</label>
+        <br />
         <input
-          type="radio"
-          id="flagTypeStrict"
+          type="checkbox"
+          id="strictOrder"
           name="flagType"
-          value={FlagColorType.STRICT}
-          onChange={this.onChange}
-          checked={this.props.colorType === FlagColorType.STRICT}
+          checked={!this.strictOrder}
+          onChange={() => (this.strictOrder = !this.strictOrder)}
         />
-        <label htmlFor="flagTypeStrict">Strict color</label>
+        <label htmlFor="duplicateColors">Allow transposition colors</label>
       </div>
     );
   }
-
-  onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this.props.updateColorType(e.target.value as FlagColorType);
-  };
 }
 
 export default connector(TypeSelector);

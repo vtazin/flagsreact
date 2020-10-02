@@ -1,6 +1,6 @@
-import { ColorItem } from "../components/ColorTable";
 import { ActionType } from "../reducers";
-import { FlagColorType } from "../reducers/colorType";
+import { ColorItem } from "../reducers/colorItems";
+import { FlagSettings } from "../reducers/flagSettings";
 
 export const addColorItem = (item: ColorItem) => ({
     type: ActionType.ADD_COLOR_ITEM,
@@ -12,7 +12,7 @@ export const updateColorItem = (item: ColorItem) => ({
     payload: item
 })
 
-export const updateColorType = (flag: FlagColorType) => ({
-    type: ActionType.UPDATE_COLOR_TYPE,
-    payload: flag
+export const updateFlagSettings = (value: FlagSettings) => ({
+    type: ActionType.UPDATE_FLAG_SETTINGS,
+    payload: value
 })

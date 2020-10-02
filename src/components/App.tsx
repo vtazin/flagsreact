@@ -7,11 +7,12 @@ export default class App extends Component {
   render() {
     return (
       <div style={{ padding: "5px" }} className="ui grid">
-        <div className="two wide column grey">
+        <div className="three wide column grey">
           <ColorTable />
+          <hr />
           <TypeSelector />
         </div>
-        <div className="fourteen wide column green">
+        <div className="thirteen wide column green">
           <FlagTable />
         </div>
       </div>

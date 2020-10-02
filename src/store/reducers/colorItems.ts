@@ -1,14 +1,28 @@
 import { ActionType } from ".";
-import { ColorItem } from "../components/ColorTable";
+import { ColorList } from "../../resources/colorList";
 
-const INITIAL_STATE: ColorItem[] = [];
+export type ColorItem = {
+    name: string;
+    checked: boolean;
+    colorValue: string;
+};
 
 type ColorItemAction = {
     type: ActionType,
     payload: ColorItem
 }
 
-export default function (state = INITIAL_STATE, action: ColorItemAction) {
+const INITIAL_CHECKED = [0, 2, 4, 6];
+
+export const INITIAL_STATE: ColorItem[] = Object.keys(ColorList).map(
+    (name, index) => ({
+        name,
+        checked: INITIAL_CHECKED.includes(index),
+        colorValue: ColorList[name],
+    })
+);
+
+export default function (state: ColorItem[] = [], action: ColorItemAction) {
 
     switch (action.type) {
         case ActionType.ADD_COLOR_ITEM:
