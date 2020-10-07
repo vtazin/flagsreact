@@ -2,13 +2,15 @@ import { ActionType } from ".";
 
 const INITIAL_STATE = {
     withoutRepeat: true,
-    strictOrder: true
+    strictOrder: true,
+    colorNumbers: 3
 };
 
 
 export interface FlagSettings {
     withoutRepeat?: boolean;
     strictOrder?: boolean;
+    colorNumbers?: number;
 }
 
 type FlagSettingsAction = {

@@ -28,61 +28,46 @@ class FlagTable extends Component<ConnectedProps<typeof connector>> {
     });
   };
 
+  fillFunc = (
+    indexes: number[],
+    resultDictionary: { [key: string]: ColorItem[] },
+    n: number
+  ) => {
+    const fillFlag = n >= this.props.flagSettings.colorNumbers - 1;
+    const colorItemList = this.getSelectedColors();
+    for (let i = 0; i < colorItemList.length; i++) {
+      if (this.props.flagSettings.withoutRepeat && indexes.includes(i)) {
+        continue;
+      }
+      indexes[n] = i;
+      if (fillFlag) {
+        if (this.props.flagSettings.strictOrder) {
+          indexes.sort();
+        }
+        const index = indexes.join("_");
+        if (!resultDictionary.hasOwnProperty(index))
+          resultDictionary[index] = indexes.map(
+            (index) => colorItemList[index]
+          );
+      } else {
+        this.fillFunc(indexes, resultDictionary, n + 1);
+      }
+    }
+    indexes.length = n;
+  };
+
   fillSet = () => {
     const result: ColorItem[][] = [];
-    const colorItemList = this.getSelectedColors();
 
     const resultDictionary: { [key: string]: ColorItem[] } = {};
 
-    for (let i = 0; i < colorItemList.length; i++) {
-      for (let j = 0; j < colorItemList.length; j++) {
-        for (let k = 0; k < colorItemList.length; k++) {
-          if (this.props.flagSettings.strictOrder) {
-            if (
-              this.props.flagSettings.withoutRepeat &&
-              (i === j || i === k || j === k)
-            ) {
-              continue;
-            }
-            const a = Math.min(i, j, k);
-            const c = Math.max(i, j, k);
-            let b;
-            if (a !== i && c !== i) {
-              b = i;
-            } else if (a !== j && c !== j) {
-              b = j;
-            } else {
-              b = k;
-            }
-
-            resultDictionary[`${a}_${b}_${c}`] = [
-              colorItemList[a],
-              colorItemList[b],
-              colorItemList[c],
-            ];
-          } else {
-            if (
-              this.props.flagSettings.withoutRepeat &&
-              (i === j || i === k || j === k)
-            ) {
-              continue;
-            }
-
-            const colorI = colorItemList[i];
-            const colorJ = colorItemList[j];
-            const colorK = colorItemList[k];
-
-            resultDictionary[`${i}_${j}_${k}`] = [colorI, colorJ, colorK];
-          }
-        }
-      }
-    }
+    this.fillFunc([], resultDictionary, 0);
 
     for (const key in resultDictionary) {
       result.push(resultDictionary[key]);
     }
-
-    return result.sort(() => (Math.random() > 0.5 ? 1 : -1));
+    return result;
+    // return result.sort(() => (Math.random() > 0.5 ? 1 : -1));
   };
 
   render() {
@@ -92,7 +77,7 @@ class FlagTable extends Component<ConnectedProps<typeof connector>> {
         <p>{`Total: ${flagList.length}`}</p>
         <ul>
           {flagList.map((colorItems, i) => {
-            let key = Math.random().toString();
+            let key = ""; //Math.random().toString();
             const colors: string[] = [];
             colorItems.forEach((colorItem) => {
               key += colorItem.name;
@@ -118,6 +103,7 @@ class FlagTable extends Component<ConnectedProps<typeof connector>> {
                 )}
               </Transition>
             );
+
             // ;
           })}
         </ul>

@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import ColorTable from "./ColorTable";
 import FlagTable from "./FlagTable";
-import TypeSelector from "./TypeSelector";
+import FlagSettings from "./FlagSettings";
 
 export default class App extends Component {
   render() {
     return (
-      <div style={{ padding: "5px" }} className="ui grid">
-        <div className="three wide column grey">
+      <div style={{ padding: "5px" }} className="ui two column grid">
+        <div className="four wide column grey">
           <ColorTable />
           <hr />
-          <TypeSelector />
+          <FlagSettings />
         </div>
-        <div className="thirteen wide column green">
+        <div className="twelve wide column green">
           <FlagTable />
         </div>
       </div>
