@@ -1,18 +1,19 @@
 import React, { Component } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { Transition } from "react-transition-group";
+
 import { RootState } from "../store/reducers";
-import { ColorItem } from "../store/reducers/colorItems";
+
+import { FlagColor } from "../worker/helper/helper";
 import workerApi from "../worker/workerApi";
-import FlagElement from "./FlagElement";
+import CanvasPlane from "./Canvas/CanvasPlane";
 
-const duration = 700;
+// const duration = 700;
 
-const defaultStyle = {
-  transition: `opacity ${duration}ms, transform ${duration}ms`,
-  display: "inline-block",
-  margin: "2px",
-};
+// const defaultStyle = {
+//   transition: `opacity ${duration}ms, transform ${duration}ms`,
+//   display: "inline-block",
+//   margin: "2px",
+// };
 
 const mapStateToProps = (state: RootState) => {
   return {
@@ -24,7 +25,7 @@ const connector = connect(mapStateToProps);
 
 class FlagTable extends Component<
   ConnectedProps<typeof connector>,
-  { flagList: ColorItem[][] }
+  { flagList: FlagColor[][] }
 > {
   constructor(props: ConnectedProps<typeof connector>) {
     super(props);
@@ -38,7 +39,7 @@ class FlagTable extends Component<
   };
 
   fillSet = async () => {
-    const result: ColorItem[][] = [];
+    const result: FlagColor[][] = [];
     const resultDictionary = await workerApi.fillCommand(
       this.props.flagSettings,
       this.getSelectedColors()
@@ -58,7 +59,7 @@ class FlagTable extends Component<
       <div>
         <button onClick={this.fillSet}>Calc</button>
         <p>{`Total: ${flagList.length}`}</p>
-        <ul>
+        {/* <ul>
           {flagList.map((colorItems, i) => {
             let key = "";
             const colors: string[] = [];
@@ -93,7 +94,8 @@ class FlagTable extends Component<
 
             // ;
           })}
-        </ul>
+        </ul> */}
+        <CanvasPlane flagList={flagList} />
       </div>
     );
   }
