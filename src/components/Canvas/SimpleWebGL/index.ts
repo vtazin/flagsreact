@@ -1,115 +1,94 @@
-
+import Context from "./renderer/Context";
 import Mesh from "./Mesh";
-import ShaderProgram from "./ShaderProgram";
 
 export type ColorRGBA = [number, number, number, number];
 
 export type MeshType = {
     aPosition: [number, number][],
-    indices: number[],
-    aInstansedLeftBottom: [number, number][],
+    aInstancedLeftBottom: [number, number, number, number][],
     aInstancedColor: ColorRGBA[],
 }
 
 class SimpleEngine {
-    canvas: HTMLCanvasElement;
-    gl!: WebGLRenderingContext;
-    ANGLE!: ANGLE_instanced_arrays;
-    clearBit!: number;
-    shaderProgram!: ShaderProgram;
-    mesh?: Mesh;
+    private static mesh?: Mesh;
 
-    constructor(canvas: HTMLCanvasElement) {
-        this.canvas = canvas;
-        const gl = this.canvas.getContext("webgl", {});
-        if (gl) {
-            this.gl = gl;
-            const ext = gl.getExtension("ANGLE_instanced_arrays");
-            if (ext) {
-                this.ANGLE = ext;
-                this.setUp(gl);
-            } else {
-                alert("need ANGLE_instanced_arrays");
-            }
-            this.render();
+    private constructor() { }
+
+    static create(canvas: HTMLCanvasElement) {
+        Context.setInstance(canvas);
+        this.render();
+    }
+
+    static get context() {
+        return Context.getInstance();
+    }
+
+    static setMesh(mesh: MeshType) {
+
+        const context = this.context;
+        if (!this.mesh) {
+            this.mesh = new Mesh(context.gl);
         }
-    }
 
-    private setUp(gl: WebGLRenderingContext) {
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        gl.clearColor(1, 1, 0, 1);
-        this.clearBit = gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT;
-
-        this.shaderProgram = new ShaderProgram(this.gl, this.ANGLE);
-    }
-
-    setMesh(mesh: MeshType) {
-        if (this.gl) {
-            if (!this.mesh) {
-                this.mesh = new Mesh(this.gl);
-            }
-
-            const positionArray: number[] = [];
-            for (let i = 0; i < mesh.aPosition.length; i++) {
-                const position = mesh.aPosition[i];
-                positionArray.push(...position);
-            }
-            const bufferArray: number[] = [...positionArray];
-            for (let i = 0; i < mesh.aInstancedColor.length; i++) {
-                bufferArray.push(...mesh.aInstancedColor[i]);
-            }
-            for (let i = 0; i < mesh.aInstansedLeftBottom.length; i++) {
-                bufferArray.push(...mesh.aInstansedLeftBottom[i]);
-            }
-
-            const arrayBuffer = new Float32Array(bufferArray);
-            const attributes = [
-                {
-                    location: this.shaderProgram.positionLoc,
-                    numComponents: 2,
-                    type: this.gl.FLOAT,
-                    normalize: false,
-                    offset: 0,
-                    stride: 0
-                },
-                {
-                    location: this.shaderProgram.iColorLoc,
-                    numComponents: 4,
-                    type: this.gl.FLOAT,
-                    normalize: false,
-                    offset: positionArray.length * 4,
-                    stride: 0
-                },
-                {
-                    location: this.shaderProgram.iLeftBottomLoc,
-                    numComponents: 2,
-                    type: this.gl.FLOAT,
-                    normalize: false,
-                    offset: positionArray.length * 4 + mesh.aInstancedColor.length * 4 * 4,
-                    stride: 0
-                }
-            ];
-
-            this.mesh.setAttibutes(attributes, arrayBuffer);
+        const positionArray: number[] = [];
+        for (let i = 0; i < mesh.aPosition.length; i++) {
+            const position = mesh.aPosition[i];
+            positionArray.push(...position);
         }
+        const bufferArray: number[] = [...positionArray];
+        for (let i = 0; i < mesh.aInstancedColor.length; i++) {
+            bufferArray.push(...mesh.aInstancedColor[i]);
+        }
+        for (let i = 0; i < mesh.aInstancedLeftBottom.length; i++) {
+            bufferArray.push(...mesh.aInstancedLeftBottom[i]);
+        }
+
+        const arrayBuffer = new Float32Array(bufferArray);
+        const attributes = [
+            {
+                location: context.shaderProgram.vertexAttributes['a_position'].location,
+                numComponents: context.shaderProgram.vertexAttributes['a_position'].numComponents,
+                type: context.gl[context.shaderProgram.vertexAttributes['a_position'].type],
+                normalize: false,
+                offset: 0,
+                stride: 0
+            },
+            {
+                location: context.shaderProgram.vertexAttributes['ai_color'].location,
+                numComponents: context.shaderProgram.vertexAttributes['ai_color'].numComponents,
+                type: context.gl[context.shaderProgram.vertexAttributes['ai_color'].type],
+                normalize: false,
+                offset: positionArray.length * 4,
+                stride: 0
+            },
+            {
+                location: context.shaderProgram.vertexAttributes['ai_leftBottom'].location,
+                numComponents: context.shaderProgram.vertexAttributes['ai_leftBottom'].numComponents,
+                type: context.gl[context.shaderProgram.vertexAttributes['ai_leftBottom'].type],
+                normalize: false,
+                offset: positionArray.length * 4 + mesh.aInstancedColor.length * 4 * 4,
+                stride: 0
+            }
+        ];
+
+        const uniforms = context.shaderProgram.uniforms;
+
+        this.mesh.setAttibutes(attributes, uniforms, arrayBuffer, mesh.aInstancedColor.length);
+
     }
 
-    setCleanColor(color: ColorRGBA) {
-        this.gl.clearColor(...color);
-    }
-
-    private renderFlag() {
-
+    private static renderFlag() {
+        const context = this.context;
         if (this.mesh !== undefined) {
-            this.shaderProgram.activate();
-            this.mesh.render(this.gl, this.ANGLE);
+            context.shaderProgram.activate();
+            this.mesh.render();
         }
     }
 
-    render = () => {
-        requestAnimationFrame(this.render);
-        this.gl.clear(this.clearBit);
-        this.renderFlag();
+    static render() {
+        requestAnimationFrame(SimpleEngine.render);
+        SimpleEngine.context.cleanCanvas();
+        SimpleEngine.renderFlag();
     }
 }
 

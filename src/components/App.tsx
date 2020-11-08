@@ -12,7 +12,7 @@ export default class App extends Component {
           <hr />
           <FlagSettings />
         </div>
-        <div className="twelve wide column green">
+        <div className="twelve wide column light pink">
           <FlagTable />
         </div>
       </div>

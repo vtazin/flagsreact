@@ -57,9 +57,9 @@ export default class HelperWorker {
     let color = colorValue;
     color = color.substring(1); // remove #
 
-    let colorNumericR = parseInt(color.substr(0, 2), 16); // convert to integer
-    let colorNumericG = parseInt(color.substr(2, 2), 16); // convert to integer
-    let colorNumericB = parseInt(color.substr(4, 2), 16); // convert to integer
+    let colorNumericR = parseInt(color.substr(0, 2), 16) / 255; // convert to integer
+    let colorNumericG = parseInt(color.substr(2, 2), 16) / 255; // convert to integer
+    let colorNumericB = parseInt(color.substr(4, 2), 16) / 255; // convert to integer
 
     return [colorNumericR, colorNumericG, colorNumericB, 1];
   }
