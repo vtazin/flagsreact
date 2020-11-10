@@ -58,32 +58,11 @@ class Context {
         return this.instance;
     }
 
-    drawInstanced(buffer: WebGLBuffer, arrayBuffer: ArrayBuffer, attributes: any[], uniforms: any, numInstances: number) {
-        const gl = this.gl;
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(
-            gl.ARRAY_BUFFER,
-            arrayBuffer,
-            gl.STATIC_DRAW
-        );
-
-
-        for (let i = 0; i < attributes.length; i++) {
-            const attribute = attributes[i];
-            gl.vertexAttribPointer(
-                attribute.location,
-                attribute.numComponents,
-                attribute.type,
-                attribute.normalize,
-                attribute.stride,
-                attribute.offset
-            );
-        }
-
-        gl.uniform1f(uniforms['u_time'].location, performance.now());
+    drawInstanced(arrayBuffer: ArrayBuffer, attributes: any[], numInstances: number) {
+        this.shaderProgram.updateAttibutes(arrayBuffer, attributes);
 
         this.ANGLE.drawArraysInstancedANGLE(
-            gl.TRIANGLE_FAN,
+            this.gl.TRIANGLE_FAN,
             0, // offset
             4, // num vertices per instance
             numInstances // num instances

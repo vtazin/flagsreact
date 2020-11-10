@@ -1,7 +1,7 @@
 import shaderVert from "../shaders/vertex.glsl";
 import shaderFrag from "../shaders/fragment.glsl";
 
-import { mat4, vec4 } from 'gl-matrix';
+import { mat4 } from 'gl-matrix';
 
 enum AttributeType {
     FLOAT = 'FLOAT',
@@ -17,6 +17,9 @@ class ShaderProgram {
     positionLoc!: number;
     iLeftBottomLoc!: number;
     iColorLoc!: number;
+
+    attibuteBuffer!: WebGLBuffer;
+    arrayBuffer?: ArrayBuffer;
 
     vertexAttributes: { [key: string]: { name: string; location: number; type: AttributeType; numComponents: number; } } = {};
     uniforms: { [key: string]: { name: string; location: WebGLUniformLocation; type: number; }; };
@@ -52,13 +55,15 @@ class ShaderProgram {
         this.gl.uniform1f(this.uniforms['u_time'].location, 0);
 
 
-        const a = vec4.create();
-        a[0] = 0;
-        a[1] = -0.6666667;
-        a[2] = 0;
-        a[3] = 1;
+        this.attibuteBuffer = gl.createBuffer()!;
 
-        console.log(vec4.transformMat4(vec4.create(), a, pMatrix));
+        // const a = vec4.create();
+        // a[0] = 0;
+        // a[1] = -0.6666667;
+        // a[2] = 0;
+        // a[3] = 1;
+
+        // console.log(vec4.transformMat4(vec4.create(), a, pMatrix));
     }
 
 
@@ -168,6 +173,39 @@ class ShaderProgram {
 
     activate() {
         this.gl.useProgram(this.shaderProgram);
+    }
+
+    updateAttibutes(arrayBuffer: ArrayBuffer, attributes: any[]) {
+        const gl = this.gl;
+        if (arrayBuffer !== this.arrayBuffer) {
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.attibuteBuffer);
+            gl.bufferData(
+                gl.ARRAY_BUFFER,
+                arrayBuffer,
+                gl.STATIC_DRAW
+            );
+
+
+            for (let i = 0; i < attributes.length; i++) {
+
+                const { name, offset, stride, normalize = false } = attributes[i];
+                const { location, numComponents, type } = this.vertexAttributes[name];
+                if (location !== undefined) {
+                    gl.vertexAttribPointer(
+                        location,
+                        numComponents,
+                        gl[type],
+                        normalize,
+                        stride,
+                        offset
+                    );
+                }
+            }
+
+            this.arrayBuffer = arrayBuffer;
+        }
+        gl.uniform1f(this.uniforms['u_time'].location, performance.now());
+
     }
 }
 

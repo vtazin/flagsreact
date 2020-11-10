@@ -1,34 +1,53 @@
 import SimpleEngine from ".";
+import { MeshDescription } from "../../../worker/helper/helper";
 
 export default class Mesh {
 
-    buffer: WebGLBuffer;
-
     attributes?: any[];
-    uniforms?: any;
+
     count = 0;
     arrayBuffer?: ArrayBuffer;
 
-    isDirty: boolean = true;
+    currentBuffer?: ArrayBuffer;
 
-    constructor(gl: WebGLRenderingContext) {
-        this.buffer = gl.createBuffer()!;
+    colorOffset = 0;
+    leftBottomOffset = 0;
+
+    constructor(description: MeshDescription) {
+        this.updateContent(description);
     }
 
+    updateContent(description: MeshDescription) {
+        const { colorOffset, leftBottomOffset, itemsCount, arrayBuffer } = description;
 
+        if (this.currentBuffer !== arrayBuffer) {
+            this.currentBuffer = arrayBuffer;
+            this.arrayBuffer = new Float32Array(arrayBuffer);
+            this.attributes = [
+                {
+                    name: 'a_position',
+                    offset: 0,
+                    stride: 0
+                },
+                {
+                    name: 'ai_color',
+                    offset: colorOffset,
+                    stride: 0
+                },
+                {
+                    name: 'ai_leftBottom',
+                    offset: leftBottomOffset,
+                    stride: 0
+                }
+            ];
+            this.count = itemsCount;
+        }
 
-    setAttibutes(attributes: any[], uniforms: any, arrayBuffer: ArrayBuffer, count: number) {
-        this.attributes = attributes;
-        this.uniforms = uniforms;
-        this.arrayBuffer = arrayBuffer;
-        this.count = count;
-        this.isDirty = true;
     }
 
     render() {
-
         if (this.arrayBuffer && this.attributes) {
-            SimpleEngine.context.drawInstanced(this.buffer, this.arrayBuffer, this.attributes, this.uniforms, this.count)
+            SimpleEngine.context.drawInstanced(this.arrayBuffer, this.attributes, this.count)
         }
     }
 }

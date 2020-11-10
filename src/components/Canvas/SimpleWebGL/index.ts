@@ -1,5 +1,6 @@
 import Context from "./renderer/Context";
 import Mesh from "./Mesh";
+import { MeshDescription } from "../../../worker/helper/helper";
 
 export type ColorRGBA = [number, number, number, number];
 
@@ -23,58 +24,13 @@ class SimpleEngine {
         return Context.getInstance();
     }
 
-    static setMesh(mesh: MeshType) {
-
-        const context = this.context;
+    static setMeshDescription(meshDesscription: MeshDescription) {
         if (!this.mesh) {
-            this.mesh = new Mesh(context.gl);
+            this.mesh = new Mesh(meshDesscription);
         }
-
-        const positionArray: number[] = [];
-        for (let i = 0; i < mesh.aPosition.length; i++) {
-            const position = mesh.aPosition[i];
-            positionArray.push(...position);
+        else {
+            this.mesh.updateContent(meshDesscription);
         }
-        const bufferArray: number[] = [...positionArray];
-        for (let i = 0; i < mesh.aInstancedColor.length; i++) {
-            bufferArray.push(...mesh.aInstancedColor[i]);
-        }
-        for (let i = 0; i < mesh.aInstancedLeftBottom.length; i++) {
-            bufferArray.push(...mesh.aInstancedLeftBottom[i]);
-        }
-
-        const arrayBuffer = new Float32Array(bufferArray);
-        const attributes = [
-            {
-                location: context.shaderProgram.vertexAttributes['a_position'].location,
-                numComponents: context.shaderProgram.vertexAttributes['a_position'].numComponents,
-                type: context.gl[context.shaderProgram.vertexAttributes['a_position'].type],
-                normalize: false,
-                offset: 0,
-                stride: 0
-            },
-            {
-                location: context.shaderProgram.vertexAttributes['ai_color'].location,
-                numComponents: context.shaderProgram.vertexAttributes['ai_color'].numComponents,
-                type: context.gl[context.shaderProgram.vertexAttributes['ai_color'].type],
-                normalize: false,
-                offset: positionArray.length * 4,
-                stride: 0
-            },
-            {
-                location: context.shaderProgram.vertexAttributes['ai_leftBottom'].location,
-                numComponents: context.shaderProgram.vertexAttributes['ai_leftBottom'].numComponents,
-                type: context.gl[context.shaderProgram.vertexAttributes['ai_leftBottom'].type],
-                normalize: false,
-                offset: positionArray.length * 4 + mesh.aInstancedColor.length * 4 * 4,
-                stride: 0
-            }
-        ];
-
-        const uniforms = context.shaderProgram.uniforms;
-
-        this.mesh.setAttibutes(attributes, uniforms, arrayBuffer, mesh.aInstancedColor.length);
-
     }
 
     private static renderFlag() {
