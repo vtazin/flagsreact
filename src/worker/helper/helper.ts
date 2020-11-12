@@ -1,4 +1,4 @@
-import { ColorItem } from '../../store/reducers/colorItems';
+
 import { transfer } from 'comlink';
 import { ColorRGBA, MeshType } from '../../components/Canvas/SimpleWebGL'
 
@@ -16,26 +16,24 @@ export type MeshDescription = {
 }
 
 export default class HelperWorker {
-  static fillSet(flagSettings: any, colorItems: ColorItem[]) {
-    console.log("Start our long running job...");
-    const startTime = Date.now();
+  static fillSet(flagSettings: any, colorItems: number[]) {
 
-    const resultDictionary: { [key: string]: FlagColor[] } = {};
+    const resultDictionary: { [key: string]: number[] } = {};
 
     HelperWorker.fillFunc([], resultDictionary, 0, flagSettings, colorItems);
 
-    let flagList: FlagColor[][] = [];
+    let flagList: number[][] = [];
     for (const key in resultDictionary) {
       flagList.push(resultDictionary[key]);
     }
     flagList = flagList.sort(() => (Math.random() > 0.5 ? 1 : -1));
     const result = this.createArrayBuffer(flagList);
-    console.log((Date.now() - startTime) / 1000);
+
     return result;
 
   }
 
-  private static createArrayBuffer(flagList: FlagColor[][]): MeshDescription {
+  private static createArrayBuffer(flagList: number[][]): MeshDescription {
     const count = flagList.length;
     const mesh = this.createMesh(flagList);
     const bufferArray: number[] = [];
@@ -46,7 +44,7 @@ export default class HelperWorker {
 
     const colorOffset = bufferArray.length * 4;
     for (let i = 0; i < mesh.aInstancedColor.length; i++) {
-      bufferArray.push(...mesh.aInstancedColor[i]);
+      bufferArray.push(mesh.aInstancedColor[i]);
     }
     const leftBottomOffset = bufferArray.length * 4;
     for (let i = 0; i < mesh.aInstancedLeftBottom.length; i++) {
@@ -58,7 +56,7 @@ export default class HelperWorker {
     return { colorOffset, leftBottomOffset, count, itemsCount: mesh.aInstancedColor.length, arrayBuffer: transfer(result.buffer, [result.buffer]) };
   }
 
-  private static createMesh(flagList: FlagColor[][]) {
+  private static createMesh(flagList: number[][]) {
     const flagCount = flagList.length;
     let width = 1;
     let height = 1;
@@ -74,7 +72,7 @@ export default class HelperWorker {
       height = width / flag.length;
       for (let i = 0; i < flag.length; i++) {
         aInstancedLeftBottom.push([0, 0, -height + height * i, 0]);
-        aInstancedColor.push(flag[i].color);
+        aInstancedColor.push(flag[i]);
       }
 
       let count = 1,
@@ -104,7 +102,7 @@ export default class HelperWorker {
               -height + height * i,
               rotationSpeed,
             ]);
-            aInstancedColor.push(flag[i].color);
+            aInstancedColor.push(flag[i]);
           }
           n++;
         }
@@ -131,8 +129,8 @@ export default class HelperWorker {
 
   private static fillFunc(
     indexes: number[],
-    resultDictionary: { [key: string]: FlagColor[] },
-    n: number, flagSettings: any, colorItems: ColorItem[]
+    resultDictionary: { [key: string]: number[] },
+    n: number, flagSettings: any, colorItems: number[]
   ) {
     const fillFlag = n >= flagSettings.colorNumbers - 1;
     const colorItemList = colorItems;
@@ -152,28 +150,12 @@ export default class HelperWorker {
 
         const index = this.curIndexes.join("_");
         if (!resultDictionary[index])
-          resultDictionary[index] = this.curIndexes.map(
-            (index) => {
-              const colorItem = colorItemList[index];
-              return { name: colorItem.name, color: this.convertColor(colorItem.colorValue) }
-            }
-          );
+          resultDictionary[index] = this.curIndexes.map(index => colorItemList[index]);
       } else {
         HelperWorker.fillFunc(indexes, resultDictionary, n + 1, flagSettings, colorItems);
       }
     }
     indexes.length = n;
   };
-
-  private static convertColor(colorValue: string): ColorRGBA {
-    let color = colorValue;
-    color = color.substring(1); // remove #
-
-    let colorNumericR = parseInt(color.substr(0, 2), 16) / 255; // convert to integer
-    let colorNumericG = parseInt(color.substr(2, 2), 16) / 255; // convert to integer
-    let colorNumericB = parseInt(color.substr(4, 2), 16) / 255; // convert to integer
-
-    return [colorNumericR, colorNumericG, colorNumericB, 1];
-  }
 
 }

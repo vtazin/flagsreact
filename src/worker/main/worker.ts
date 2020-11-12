@@ -1,11 +1,10 @@
 import { wrap } from "comlink";
 import { HelperWorkerType } from "../helper";
-import { ColorItem } from "../../store/reducers/colorItems";
 
 class MainWorker {
   private static worker: Worker | null = null;
 
-  static async fillCommand(flagSettings: any, colorItems: ColorItem[]) {
+  static async fillCommand(flagSettings: any, colorItems: number[]) {
     if (MainWorker.worker) {
       MainWorker.worker.terminate();
     }

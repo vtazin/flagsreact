@@ -6,6 +6,7 @@ import { MeshDescription } from "../worker/helper/helper";
 
 import workerApi from "../worker/workerApi";
 import CanvasPlane from "./Canvas/CanvasPlane";
+import { ColorRGBA } from "./Canvas/SimpleWebGL";
 
 const mapStateToProps = (state: RootState) => {
   return {
@@ -17,8 +18,9 @@ const connector = connect(mapStateToProps);
 
 class FlagTable extends Component<
   ConnectedProps<typeof connector>,
-  MeshDescription
+  MeshDescription & { loading: boolean }
 > {
+  colorList: ColorRGBA[];
   constructor(props: ConnectedProps<typeof connector>) {
     super(props);
     this.state = {
@@ -27,33 +29,64 @@ class FlagTable extends Component<
       leftBottomOffset: 0,
       itemsCount: 0,
       arrayBuffer: new Float32Array(),
+      loading: false,
     };
+
+    this.colorList = this.props.colorItems.map((colorItem) =>
+      FlagTable.convertColor(colorItem.colorValue)
+    );
+  }
+
+  private static convertColor(colorValue: string): ColorRGBA {
+    let color = colorValue;
+    color = color.substring(1); // remove #
+
+    let colorNumericR = parseInt(color.substr(0, 2), 16) / 255; // convert to integer
+    let colorNumericG = parseInt(color.substr(2, 2), 16) / 255; // convert to integer
+    let colorNumericB = parseInt(color.substr(4, 2), 16) / 255; // convert to integer
+
+    return [colorNumericR, colorNumericG, colorNumericB, 1];
   }
 
   getSelectedColors = () => {
-    return this.props.colorItems.filter((colorItem) => {
-      return colorItem.checked;
-    });
+    return this.props.colorItems.reduce((filtered, colorItem, currentIndex) => {
+      if (colorItem.checked) {
+        filtered.push(currentIndex);
+      }
+      return filtered;
+    }, [] as number[]);
   };
 
   fillSet = async () => {
-    const startTime = Date.now();
+    this.setState({ loading: true });
 
     const result = await workerApi.fillCommand(
       this.props.flagSettings,
       this.getSelectedColors()
     );
-    console.log("getResult:" + (Date.now() - startTime) / 1000);
-    this.setState(result);
+
+    this.setState({ ...result, loading: false });
   };
+
+  componentDidMount() {
+    this.fillSet();
+  }
 
   render() {
     return (
       <div>
-        <button onClick={this.fillSet}>Calc</button>
+        <button onClick={this.fillSet}>
+          Calc{" "}
+          <div
+            className={`ui mini ${
+              this.state.loading ? "active" : "disabled"
+            } inline loader`}
+          ></div>
+        </button>
+
         <p>{`Total: ${this.state.count}`}</p>
 
-        <CanvasPlane description={this.state} />
+        <CanvasPlane description={this.state} colorList={this.colorList} />
       </div>
     );
   }

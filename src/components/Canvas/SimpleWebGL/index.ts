@@ -7,7 +7,7 @@ export type ColorRGBA = [number, number, number, number];
 export type MeshType = {
     aPosition: [number, number][],
     aInstancedLeftBottom: [number, number, number, number][],
-    aInstancedColor: ColorRGBA[],
+    aInstancedColor: number[],
 }
 
 class SimpleEngine {
@@ -31,6 +31,10 @@ class SimpleEngine {
         else {
             this.mesh.updateContent(meshDesscription);
         }
+    }
+
+    static setColorList(colorList: ColorRGBA[]) {
+        this.context.shaderProgram.setColorListUniform(colorList);
     }
 
     private static renderFlag() {

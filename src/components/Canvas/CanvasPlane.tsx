@@ -1,10 +1,11 @@
 import React, { Component, RefObject } from "react";
 import { MeshDescription } from "../../worker/helper/helper";
 
-import SimpleEngine from "./SimpleWebGL";
+import SimpleEngine, { ColorRGBA } from "./SimpleWebGL";
 
 type Props = {
   description: MeshDescription;
+  colorList: ColorRGBA[];
 };
 
 class CanvasPlane extends Component<Props> {
@@ -17,6 +18,7 @@ class CanvasPlane extends Component<Props> {
   componentDidMount() {
     const canvas = this.myRef.current!;
     SimpleEngine.create(canvas);
+    SimpleEngine.setColorList(this.props.colorList);
   }
 
   componentDidUpdate() {

@@ -2,6 +2,7 @@ import shaderVert from "../shaders/vertex.glsl";
 import shaderFrag from "../shaders/fragment.glsl";
 
 import { mat4 } from 'gl-matrix';
+import { ColorRGBA } from "../..";
 
 enum AttributeType {
     FLOAT = 'FLOAT',
@@ -22,7 +23,7 @@ class ShaderProgram {
     arrayBuffer?: ArrayBuffer;
 
     vertexAttributes: { [key: string]: { name: string; location: number; type: AttributeType; numComponents: number; } } = {};
-    uniforms: { [key: string]: { name: string; location: WebGLUniformLocation; type: number; }; };
+    uniforms: { [key: string]: { name: string; location: WebGLUniformLocation; type: number; }; } = {};
 
     constructor(gl: WebGLRenderingContext, ANGLE: ANGLE_instanced_arrays) {
         this.gl = gl;
@@ -48,7 +49,7 @@ class ShaderProgram {
 
         }
 
-        this.uniforms = this._fillUniforms();
+        this._fillUniforms();
         const ratio = this.gl.canvas.width / this.gl.canvas.height;
         const pMatrix = mat4.ortho(mat4.create(), -ratio, ratio, -1.0, 1.0, 1.0, -1.0);
         this.gl.uniformMatrix4fv(this.uniforms['u_pMatrix'].location, false, pMatrix);
@@ -77,6 +78,10 @@ class ShaderProgram {
                 let type;
                 let numComponents;
                 switch (info.type) {
+                    case this.gl.FLOAT:
+                        type = AttributeType.FLOAT;
+                        numComponents = 1;
+                        break;
                     case this.gl.FLOAT_VEC2:
                         type = AttributeType.FLOAT;
                         numComponents = 2;
@@ -107,17 +112,23 @@ class ShaderProgram {
      * @param gl {WebGLRenderingContext} Контекст рисования
      */
     _fillUniforms() {
-        var uniforms: { [key: string]: { name: string; location: WebGLUniformLocation; type: number; } } = {};
         var uniformsCount = this.gl.getProgramParameter(this.shaderProgram, this.gl.ACTIVE_UNIFORMS);
         for (var i = 0; i < uniformsCount; i++) {
             var info = this.gl.getActiveUniform(this.shaderProgram, i)!;
             var name = info.name;
             if (name.indexOf('gl_') !== 0) {
                 var location = this.gl.getUniformLocation(this.shaderProgram, name)!;
-                uniforms[name] = { name, location, type: info.type };
+                this.uniforms[name] = { name, location, type: info.type };
             }
         }
-        return uniforms;
+    }
+
+    setColorListUniform(colors: ColorRGBA[]) {
+        const colorsArray = [];
+        for (let i = 0; i < colors.length; i++) {
+            colorsArray.push(...colors[i]);
+        }
+        this.gl.uniform4fv(this.uniforms[`u_Material[0]`].location, colorsArray);
     }
 
 
