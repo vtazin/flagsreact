@@ -76,8 +76,9 @@
     "worker-plugin": "^5.0.0"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
+    "dev": "node scripts/start.js",
+    "start": "node scripts/server.js",
+    "postinstall": "node scripts/build.js",
     "test": "node scripts/test.js"
   },
   "eslintConfig": {

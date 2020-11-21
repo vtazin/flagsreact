@@ -64,9 +64,12 @@ export default class HelperWorker {
     const aInstancedLeftBottom: [number, number, number, number][] = [];
     const aInstancedColor = [];
     if (flagCount > 0) {
-      width = 0.6667 / Math.ceil(Math.sqrt(flagCount));
 
-      const flagRadius = width / Math.SQRT2;
+      const n = Math.ceil(0.5 * (Math.sqrt(1.6 * flagCount - 0.6) - 1));
+
+      const flagRadius = 0.99 / (2 * n + 1);
+
+      width = Math.SQRT2 * flagRadius;
 
       const flag = flagList[0];
       height = width / flag.length;
@@ -80,10 +83,8 @@ export default class HelperWorker {
         sign = 1;
       while (count < flagCount) {
         level++;
-        const centerRadius = flagRadius * 2.25 * level;
-        const itemsOnRadius = Math.ceil(
-          (Math.PI * 2) / (6 * Math.asin((0.5 * flagRadius) / centerRadius))
-        );
+        const centerRadius = flagRadius * 2 * level;
+        const itemsOnRadius = 5 * level;
         const rotationSpeed = sign * Math.random();
         sign = -sign;
         const curCount = Math.min(flagCount, count + itemsOnRadius);

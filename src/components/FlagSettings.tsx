@@ -36,54 +36,51 @@ class FlagSettings extends Component<ConnectedProps<typeof connector>> {
 
   render() {
     return (
-      <div className="ui column stackable container">
+      <div className="ui center aligned">
+        <p>Number of colors:</p>
+        <div className="mini ui buttons">
+          <button
+            className="ui button"
+            onClick={() =>
+              (this.colorNumbers = Math.max(this.colorNumbers - 1, 1))
+            }
+          >
+            <i className="minus chevron icon"></i>
+          </button>
+          <div className="or" data-text={this.colorNumbers.toString()}></div>
+          <button
+            className="ui button"
+            onClick={() =>
+              (this.colorNumbers = Math.min(
+                this.colorNumbers + 1,
+                this.props.colorsCount
+              ))
+            }
+          >
+            <i className="plus chevron icon"></i>
+          </button>
+        </div>
+        <div className="ui divider"></div>
         <p>Choose template:</p>
-        <div className="ui input">
-          <input
-            type="checkbox"
-            id="withoutRepeat"
-            name="flagType"
-            checked={!this.withoutRepeat}
-            onChange={() => (this.withoutRepeat = !this.withoutRepeat)}
-          />
-          <label htmlFor="withoutRepeat">Allow duplicate colors</label>
-        </div>
-        <hr />
-        <div className="ui input">
-          <input
-            type="checkbox"
-            id="strictOrder"
-            name="flagType"
-            checked={!this.strictOrder}
-            onChange={() => (this.strictOrder = !this.strictOrder)}
-          />
-          <label htmlFor="duplicateColors">Allow transposition colors</label>
-        </div>
-        <hr />
-        <div className="ui mini">
-          <span className="ui large">Number of colors:</span>
-          <div className="ui mini">
-            <div className="ui big label">{this.colorNumbers.toString()}</div>
+        <div className="ui center aligned one column grid">
+          <div className="column">
             <button
-              className="ui mini button"
-              onClick={() =>
-                (this.colorNumbers = Math.min(
-                  this.colorNumbers + 1,
-                  this.props.colorsCount
-                ))
-              }
+              className={`mini ui toggle button ${
+                !this.withoutRepeat ? "active" : ""
+              }`}
+              onClick={() => (this.withoutRepeat = !this.withoutRepeat)}
             >
-              {" "}
-              <i className="plus chevron icon"></i>
+              Duplication
             </button>
+          </div>
+          <div className="column">
             <button
-              className="ui mini button"
-              onClick={() =>
-                (this.colorNumbers = Math.max(this.colorNumbers - 1, 1))
-              }
+              className={`mini ui toggle button ${
+                !this.strictOrder ? "active" : ""
+              }`}
+              onClick={() => (this.strictOrder = !this.strictOrder)}
             >
-              {" "}
-              <i className="minus chevron icon"></i>
+              Position
             </button>
           </div>
         </div>

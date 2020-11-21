@@ -32,6 +32,9 @@ class SimpleEngine {
             this.mesh.updateContent(meshDesscription);
         }
     }
+    static setCleanColor(color: ColorRGBA) {
+        this.context.setCleanColor(color);
+    }
 
     static setColorList(colorList: ColorRGBA[]) {
         this.context.shaderProgram.setColorListUniform(colorList);

@@ -30,10 +30,15 @@ class Context {
 
     private setUp() {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
-        this.gl.clearColor(0.25, 0.25, 0.25, 0);
+        this.gl.clearColor(0, 0, 0, 0);
         this.clearBit = this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT;
 
         this.shaderProgram = new ShaderProgram(this.gl, this.ANGLE);
+    }
+
+    resize() {
+        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+        this.shaderProgram.resizeCanvas();
     }
 
     setCleanColor(color: ColorRGBA) {

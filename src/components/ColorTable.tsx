@@ -38,48 +38,35 @@ class ColorTable extends Component<StateConnector> {
   }
 
   render() {
+    const smallSize = window.screen.availWidth < 991;
     return (
-      <table className="ui celled inverted table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Colors</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div className="ui center aligned">
+        <p>Choose colors:</p>
+        <div className={`ui two column grid`}>
           {this.props.colorItemList.map((item) => {
             return (
-              <tr key={item.name}>
-                <td data-label="#">
-                  <div className="ui input">
-                    <input
-                      type="checkbox"
-                      checked={item.checked}
-                      onChange={(e) => {
-                        let newItem = { ...item };
-                        newItem.checked = e.target.checked;
-                        this.props.updateColorItem(newItem);
-                      }}
-                    />
-                  </div>
-                </td>
-                <td data-label="Colors">
-                  <div
-                    style={{
-                      border: "solid 1px",
-                      backgroundColor: item.colorValue,
-                      color: this.textColor(item.colorValue),
-                      textAlign: "center",
-                    }}
-                  >
-                    {item.name}
-                  </div>
-                </td>
-              </tr>
+              <div className="column" key={item.name}>
+                <button
+                  style={{
+                    border: "solid 2px",
+                    backgroundColor: item.colorValue,
+                    color: this.textColor(item.colorValue),
+                    opacity: item.checked ? 1 : 0.2,
+                  }}
+                  className={`ui ${smallSize ? "mini " : ""} button`}
+                  onClick={(e) => {
+                    let newItem = { ...item };
+                    newItem.checked = !newItem.checked;
+                    this.props.updateColorItem(newItem);
+                  }}
+                >
+                  {smallSize ? item.name.slice(0, 1) : item.name}
+                </button>
+              </div>
             );
           })}
-        </tbody>
-      </table>
+        </div>
+      </div>
     );
   }
 }

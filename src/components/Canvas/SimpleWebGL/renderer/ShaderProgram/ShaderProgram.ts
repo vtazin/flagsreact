@@ -66,6 +66,17 @@ class ShaderProgram {
 
         // console.log(vec4.transformMat4(vec4.create(), a, pMatrix));
     }
+    resizeCanvas = () => {
+        const ratio = this.gl.canvas.width / this.gl.canvas.height;
+        let pMatrix;
+        if (ratio >= 1) {
+            pMatrix = mat4.ortho(mat4.create(), -ratio, ratio, -1.0, 1.0, 1.0, -1.0);
+        }
+        else {
+            pMatrix = mat4.ortho(mat4.create(), -1, 1, -1.0 / ratio, 1.0 / ratio, 1.0, -1.0);
+        }
+        this.gl.uniformMatrix4fv(this.uniforms['u_pMatrix'].location, false, pMatrix);
+    }
 
 
     _fillVertexAttributes() {

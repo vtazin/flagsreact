@@ -74,14 +74,14 @@ class FlagTable extends Component<
 
   render() {
     return (
-      <div>
-        <button onClick={this.fillSet}>
-          Calc{" "}
-          <div
-            className={`ui mini ${
-              this.state.loading ? "active" : "disabled"
-            } inline loader`}
-          ></div>
+      <div style={{ width: "100%", height: "100%" }}>
+        <button
+          className={`ui big button green ${
+            this.state.loading ? "loading" : ""
+          }`}
+          onClick={this.fillSet}
+        >
+          Calc
         </button>
 
         <p>{`Total: ${this.state.count}`}</p>
