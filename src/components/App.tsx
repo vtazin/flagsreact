@@ -6,7 +6,7 @@ import FlagSettings from "./FlagSettings";
 export default class App extends Component {
   render() {
     return (
-      <div className="ui center aligned segment">
+      <div className="ui center aligned vertical segment">
         <div className="ui two column divided relaxed grid">
           <div className="six wide mobile four wide tablet four wide computer four wide large screen column violet">
             <ColorTable />
