@@ -1,5 +1,7 @@
 import { wrap } from "comlink";
 import { HelperWorkerType } from "../helper";
+import HelperWorker from "../helper/helper";
+
 
 class MainWorker {
   private static worker: Worker | null = null;
@@ -8,18 +10,24 @@ class MainWorker {
     if (MainWorker.worker) {
       MainWorker.worker.terminate();
     }
-
-    MainWorker.worker = new Worker("../helper", {
-      name: "helper-worker",
-      type: "module",
-    });
-    const workerApi = wrap<HelperWorkerType>(MainWorker.worker);
+    let workerApi;
+    if (global.Worker) {
+      MainWorker.worker = new Worker("../helper", {
+        name: "helper-worker",
+        type: "module",
+      });
+      workerApi = wrap<HelperWorkerType>(MainWorker.worker);
+    }
+    else {
+      workerApi = HelperWorker;
+    }
     const result = await workerApi.fillSet(flagSettings, colorItems);
-
-    MainWorker.worker.terminate();
-    MainWorker.worker = null;
-
+    if (MainWorker.worker !== null) {
+      MainWorker.worker.terminate();
+      MainWorker.worker = null;
+    }
     return result;
+
   }
 }
 
