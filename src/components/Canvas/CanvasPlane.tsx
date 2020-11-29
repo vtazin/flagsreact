@@ -32,8 +32,14 @@ class CanvasPlane extends Component<Props> {
         parent.clientHeight,
         parent.clientWidth
       );
-      canvas.width = minParentDimension;
-      canvas.height = minParentDimension - canvas.offsetTop;
+      const devicePixelRatio = window["devicePixelRatio"] || 1;
+      canvas.style.width = minParentDimension + "px";
+      canvas.style.height = minParentDimension - canvas.offsetTop + "px";
+
+      canvas.width = minParentDimension * devicePixelRatio;
+      canvas.height =
+        (minParentDimension - canvas.offsetTop) * devicePixelRatio;
+
       SimpleEngine.context?.resize();
     }
   };
